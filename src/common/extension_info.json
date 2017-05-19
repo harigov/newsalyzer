@@ -1,0 +1,16 @@
+{
+    "content_scripts": [], 
+    "description": "Analyze news and display bias information of the article relative to other news sources", 
+    "creator": "Newsalyzer",
+    "content_scripts": [
+        "main.js"
+    ], 
+    "homepage_url": "http://www.newsalyzer.org/", 
+    "version": "0.1.0", 
+    "browser_button": {
+        "caption": "Kango", 
+        "icon": "icons/button.png", 
+        "tooltipText": "Kango"
+    }, 
+    "name": "Newsalyzer"
+}
