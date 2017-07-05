@@ -30,7 +30,7 @@
   <ItemGroup>
     <Compile Include="app.py" />
     <Compile Include="ptvs_virtualenv_proxy.py" />
-    <Compile Include="server.py" />
+    <Compile Include="server\server.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="requirements.txt" />
