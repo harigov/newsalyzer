@@ -1,4 +1,4 @@
-# newsalyzer
+# Newsalyzer
 Tool for detecting bias towards entity/people in the news and highlight that to the reader
 
 Download latest pre-release version for your favorite browser
