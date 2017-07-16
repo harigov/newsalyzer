@@ -2,14 +2,18 @@ from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, jsonify, make_response
 import json
 
+from decorators import Monitor
+
 app = Flask(__name__)
 #app.wsgi_app = WSGIApplication(app.config['APPINSIGHTS_INSTRUMENTATION_KEY'], app.wsgi_app)
 
 @app.route('/')
+@Monitor.api()
 def index():
     return 'Newsalyzer'
 
 @app.route('/get-sentiment', endpoint='get_sentiment')
+@Monitor.api()
 def get_sentiment():
     from google.cloud import language
     language_client = language.Client()
