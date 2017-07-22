@@ -1,0 +1,3 @@
+*.pyc
+extension/output/**
+newsalyzer_env
