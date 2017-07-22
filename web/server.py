@@ -9,6 +9,7 @@ from decorators import Monitor
 from blob_storage import BlobStorage
 
 app = Flask(__name__)
+app.config['DEBUG']=True
 #app.wsgi_app = WSGIApplication(app.config['APPINSIGHTS_INSTRUMENTATION_KEY'], app.wsgi_app)
 
 if os.environ.has_key('STORAGE_ACCOUNT_NAME'):
