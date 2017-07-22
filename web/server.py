@@ -7,16 +7,27 @@ from google.cloud import language
 
 from decorators import Monitor
 from blob_storage import BlobStorage
+from logger import Logger
 
 app = Flask(__name__)
 app.config['DEBUG']=True
 #app.wsgi_app = WSGIApplication(app.config['APPINSIGHTS_INSTRUMENTATION_KEY'], app.wsgi_app)
 
 if os.environ.has_key('STORAGE_ACCOUNT_NAME'):
-    local_key_file = 'private/google-nlp-key.json'
-    blob_storage = BlobStorage(os.environ['STORAGE_ACCOUNT_NAME'], os.environ['STORAGE_ACCOUNT_KEY'])
-    blob_storage.download_file('private', 'google-nlp-key.json', local_key_file)
-    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = local_key_file
+    try:
+        storage_account_name = os.environ['STORAGE_ACCOUNT_NAME']
+        storage_account_key = os.environ['STORAGE_ACCOUNT_KEY']
+        local_key_file = 'private/google-nlp-key.json'
+        base_dir_name = os.path.dirname(local_key_file)
+        if base_dir_name != '' and not os.path.exists(base_dir_name):
+            os.mkdir(base_dir_name)
+        Logger.LogInformation('Downloading the private key file')
+        blob_storage = BlobStorage(storage_account_name, storage_account_key)
+        blob_storage.download_file('private', 'google-nlp-key.json', local_key_file)
+        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = local_key_file
+        Logger.LogInformation('Successfully downloaded the private key file')
+    except Exception,e:
+        Logger.LogError('Failed to download private key: ' + e.msg)
 
 @app.route('/')
 @Monitor.api()
