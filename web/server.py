@@ -29,10 +29,15 @@ if os.environ.has_key('STORAGE_ACCOUNT_NAME'):
     except Exception,e:
         Logger.LogError('Failed to download private key: ' + e.msg)
 
-@app.route('/')
+@app.route('/', endpoint='index')
 @Monitor.api()
 def index():
     return 'Newsalyzer'
+
+@app.route('/.well-known/<path:path>', endpoint='get_acme_challenge')
+@Monitor.api()
+def get_acme_challenge(path):
+    return open(os.path.join('.well-known', path), 'r').read()
 
 @app.route('/get-sentiment', endpoint='get_sentiment')
 @Monitor.api()
