@@ -39,7 +39,7 @@ def index():
 def get_acme_challenge(path):
     return open(os.path.join('.well-known', path), 'r').read()
 
-@app.route('/get-sentiment', endpoint='get_sentiment')
+@app.route('/get-sentiment', methods=['POST'], endpoint='get_sentiment')
 @Monitor.api()
 def get_sentiment():
     language_client = language.Client(api_version='v1beta2')
