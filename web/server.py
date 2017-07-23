@@ -6,8 +6,11 @@ import json
 from google.cloud import language
 
 from decorators import Monitor
-from blob_storage import BlobStorage
-from logger import Logger
+
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
+
+from shared.blob_storage import BlobStorage
+from shared.logger import Logger
 
 app = Flask(__name__)
 app.config['DEBUG']=True

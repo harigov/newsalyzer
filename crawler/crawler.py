@@ -7,10 +7,11 @@ import urllib2
 from collections import deque
 
 class WebCrawler(object):
-    def __init__(self, article_parser, source, table):
+    def __init__(self, article_parser, source, table, sentiment_extractor):
         self._article_parser = article_parser
         self._source = source
         self._table = table
+        self._sentiment_extractor = sentiment_extractor
         self._url_queue = deque()
         self._visited_urls = {}
         for url in self._table.get_all_row_keys(source):
@@ -31,6 +32,8 @@ class WebCrawler(object):
                 self._visited_urls[url_hash] = True
                 article = self._crawl_website(url)
                 if article == None: continue
+                if self._sentiment_extractor != None:
+                    article.sentiment = self._sentiment_extractor.find_sentiment(article.content)
                 article_json = json.dumps(article.__dict__)
                 self._table.set(self._source, url_hash, article_json)
                 self._url_queue.extend(article.links)
