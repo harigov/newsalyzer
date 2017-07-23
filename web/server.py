@@ -43,7 +43,7 @@ def get_acme_challenge(path):
 @Monitor.api()
 def get_sentiment():
     language_client = language.Client(api_version='v1beta2')
-    document = language_client.document_from_text(request.args['text'])
+    document = language_client.document_from_text(request.data)
     # Detects the sentiment of the text
     sentiment = document.analyze_sentiment().sentiment
     entity_response = document.analyze_entity_sentiment()
