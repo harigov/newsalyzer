@@ -16,18 +16,21 @@ $('<link>')
 var info_btn = $('<div>').css({
 	position: 'absolute',
 	top: '80px',
-	left: document.body.clientWidth - 60 + 'px',
-	height: '30px',
-	width: '30px',
+	left: document.body.clientWidth - 70 + 'px',
+	height: '40px',
+	width: '40px',
+	color: 'white',
+	'text-align': 'center',
 	background: 'rgba(0, 0, 0, 0.85)',
 	'background-image': 'info.png',
 	'background-size': 'contain',
 	'z-index': '2147483647'
 }).appendTo(document.body);
+$('<i>').attr('class','fa fa-info-circle').css({ 'font-size': '40px' }).appendTo(info_btn);
 
 var info_bar = $('<div>').css({
 	position: 'absolute',
-	top: '110px',
+	top: '120px',
 	height: '500px',
 	left: document.body.clientWidth - 330 + 'px',
 	width: '300px',
