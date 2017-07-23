@@ -6,6 +6,10 @@ import os
 import urllib2
 from collections import deque
 
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
+
+from shared.logger import Logger
+
 class WebCrawler(object):
     def __init__(self, article_parser, source, table, sentiment_extractor):
         self._article_parser = article_parser
@@ -30,9 +34,11 @@ class WebCrawler(object):
             url_hash = self._get_url_hash(url)
             if url != None and not url_hash in self._visited_urls:
                 self._visited_urls[url_hash] = True
+                Logger.LogDebug('\t\tVisiting %s' % url)
                 article = self._crawl_website(url)
                 if article == None: continue
                 if self._sentiment_extractor != None:
+                    Logger.LogDebug('\t\tExtracting sentiment for %s' % url)
                     article.sentiment = self._sentiment_extractor.find_sentiment(article.content)
                 article_json = json.dumps(article.__dict__)
                 self._table.set(self._source, url_hash, article_json)
