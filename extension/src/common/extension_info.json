@@ -1,5 +1,4 @@
 {
-    "content_scripts": [], 
     "description": "Analyze news and display bias information of the article relative to other news sources", 
     "creator": "Newsalyzer",
     "content_scripts": [
