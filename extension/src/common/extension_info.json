@@ -5,7 +5,7 @@
         "main.js"
     ], 
     "homepage_url": "http://www.newsalyzer.org/", 
-    "version": "0.1.0", 
+    "version": "0.2.0", 
     "browser_button": {
         "caption": "Kango", 
         "icon": "icons/button.png", 
