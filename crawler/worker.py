@@ -30,6 +30,22 @@ news_sources = [
             'https://www.nytimes.com/section/health'
         ]
     }
+    {
+        'Name': 'www.cnn.com',
+        'Parser': CNNArticleParser(),
+        'SeedURLs': [
+            'http://money.cnn.com/',
+            'http://www.cnn.com/us',
+            'http://www.cnn.com/world',
+            'http://www.cnn.com/politics',
+            'http://www.cnn.com/opinions',
+            'http://www.cnn.com/entertainment',
+            'http://www.cnn.com/health',
+            'http://money.cnn.com/technology/',
+            'http://www.cnn.com/style',
+            'http://www.cnn.com/travel'
+        ]
+    }
 ]
 
 def download_nlp_key(storage_account_name, storage_account_key):
