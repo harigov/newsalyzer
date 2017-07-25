@@ -2,10 +2,12 @@ import urlparse
 import os
 from bs4 import BeautifulSoup
 import re
-from crawler import ArticleParse
-class HuffingtonArticleParser(object):
+from article_parser import ArticleParser
+
+class HuffingtonArticleParser(ArticleParser):
     def parse(self, url, article_text):
         ArticleParser.parse(self,url,article_text)
+
     def _get_title(self):
         head = self._soup.find('headline__title')
         if head != None:
@@ -13,6 +15,7 @@ class HuffingtonArticleParser(object):
             if title != None:
                 return title.getText()
         return ''
+
     def _get_date(self):
         date = self._soup.find('span', {'class' : 'timestamp__date--published'})
         if(date != None):
@@ -24,6 +27,7 @@ class HuffingtonArticleParser(object):
                 if date != None:
                     return date.encode('utf-8')
         return ''
+
     def _get_article_text(self):
         content = ''
         for story_element in self._soup.findAll('div', {'class' : 'bn-content-list-text'}):

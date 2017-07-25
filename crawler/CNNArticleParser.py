@@ -2,8 +2,9 @@ import urlparse
 import os
 from bs4 import BeautifulSoup
 import re
-from crawler import ArticleParse
-class CNNArticleParser(object):
+from article_parser import ArticleParser
+
+class CNNArticleParser(ArticleParser):
     def parse(self, url, article_text):
         ArticleParser.parse(self,url,article_text)
 
@@ -14,6 +15,7 @@ class CNNArticleParser(object):
             if title != None:
                 return title.getText()
         return ''
+
     def _get_date(self):
         date = self._soup.find('p', {'class' : 'update-time'})
         if(date != None):
@@ -25,8 +27,10 @@ class CNNArticleParser(object):
                 if date != None:
                     return date.encode('utf-8')
         return ''
+
     def _get_link_elements(self):
         return self._soup.findAll('div', {'class' : 'story'}) + self._soup.findAll('article', {'class' : 'story'})
+
     def _get_article_text(self):
         content = ''
         for story_element in self._soup.findAll('p', {'class' : 'zn-body__paragraph'}):
