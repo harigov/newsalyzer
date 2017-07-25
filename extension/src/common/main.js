@@ -104,6 +104,7 @@ if ($) {
 					$('<th>').css(entity_header_css).text('Entity').appendTo(header);
 					$('<th>').css(entity_header_css).text('Sentiment').appendTo(header);
 					header.appendTo(table);
+					//sort on salience at some point
 					for(let entity of jsonData.entities) {
 						let entity_icon = get_entity_icon(entity.type);
 						if (entity_icon) {
