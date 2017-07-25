@@ -6,7 +6,7 @@ from sentiment_extractor import SentimentExtractor
 from article_parser import Article, ArticleParser
 from CNNArticleParser import CNNArticleParser
 from HuffingtonArticleParser import HuffingtonArticleParser
-from BrietbartArticleParser import BrietbartArticleParser
+from BreitbartArticleParser import BreitbartArticleParser
 from FoxArticleParser import FoxArticleParser
 from WashingtonPostParser import WashingtonPostParser
 from YahooMailParser import YahooMailParser
