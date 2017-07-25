@@ -13,6 +13,7 @@ class Article(object):
         self.keywords = ''
         self.links = []
         self.sentiment = {}
+        self.relative_sentiment = {}
 
 class ArticleParser(object):
     def parse(self, url, article_text):
