@@ -7,9 +7,9 @@
     "homepage_url": "http://www.newsalyzer.org/", 
     "version": "0.5.0", 
     "browser_button": {
-        "caption": "Kango", 
+        "caption": "Newsalyzer", 
         "icon": "icons/button.png", 
-        "tooltipText": "Kango"
+        "tooltipText": "Newsalyzer"
     }, 
     "name": "Newsalyzer"
 }

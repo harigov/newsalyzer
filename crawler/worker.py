@@ -4,7 +4,7 @@ import os
 import sys
 
 from sentiment_extractor import SentimentExtractor
-from article_parser import Article, ArticleParser
+from article_parser import Article, ArticleParser, CNNArticleParser
 from crawler import WebCrawler
 
 sys.path.insert(0,os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
