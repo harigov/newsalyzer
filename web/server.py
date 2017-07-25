@@ -1,4 +1,5 @@
 import hashlib
+import math
 import os
 import sys
 import urlparse
@@ -12,6 +13,7 @@ sys.path.insert(0,os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'
 
 from shared.logger import Logger
 from shared.table import AzureTable
+from shared.summarizer import ArticleSummarizer
 
 app = Flask(__name__)
 app.config['DEBUG']=True
@@ -20,6 +22,8 @@ app.config['DEBUG']=True
 storage_account_name = os.environ['STORAGE_ACCOUNT_NAME']
 storage_account_key = os.environ['STORAGE_ACCOUNT_KEY']
 table = AzureTable('Articles', storage_account_name, storage_account_key)
+
+summarizer = ArticleSummarizer()
 
 @app.route('/', endpoint='index')
 @Monitor.api()
@@ -41,7 +45,14 @@ def get_sentiment():
     if json_data != None:
         data = json.loads(json_data)
         if data.has_key('sentiment'):
-            return json.dumps({'sentiment': data['sentiment'], 'word_count': data['word_count']}), 200, {'ContentType':'application/json'}
+            content = data['content']
+            summary = summarizer.summarize(content)
+            read_time_in_mins = math.ceil(int(data['word_count']) * 1.0 / 250)
+            return json.dumps({
+                'sentiment': data['sentiment'], 
+                'summary': summary,
+                'read_time_in_mins': read_time_in_mins
+            }), 200, {'ContentType':'application/json'}
     return json.dumps({ 'message': 'No sentiment data available for %s' % url }), 404, {'ContentType':'application/json'}
 
 if __name__=='__main__':

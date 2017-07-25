@@ -1,5 +1,5 @@
 #!/bin/sh
-export GITHUB_TOKEN='INSERT_TOKEN_HERE'
+export GITHUB_TOKEN='6b32de5e1eab56b227ea24d49d58551114af77e6'
 export GITHUB_RELEASE_TOOL=~/bin/github-release
 export USER_NAME='harigov'
 export REPOSITORY_NAME='newsalyzer'
