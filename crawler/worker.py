@@ -1,4 +1,3 @@
-#!/bin/python
 import argparse
 import os
 import sys
@@ -7,6 +6,8 @@ from sentiment_extractor import SentimentExtractor
 from article_parser import Article, ArticleParser
 from CNNArticleParser import CNNArticleParser
 from HuffingtonArticleParser import HuffingtonArticleParser
+from BrietbartArticleParser import BrietbartArticleParser
+from FoxArticleParser import FoxArticleParser
 from crawler import WebCrawler
 
 sys.path.insert(0,os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
@@ -61,6 +62,37 @@ news_sources = [
             'http://www.huffingtonpost.com/section/weird-news',
             'http://testkitchen.huffingtonpost.com/',
             'http://www.huffingtonpost.com/section/college'
+        ]
+    },
+    {
+        'Name': 'www.breitbart.com/',
+        'Parser': BreitbartArticleParser(),
+        'SeedUrls': [
+            'http://www.breitbart.com/big-government/',
+            'http://www.breitbart.com/big-journalism/',
+            'http://www.breitbart.com/big-hollywood/',
+            'http://www.breitbart.com/national-security/',
+            'http://www.breitbart.com/tech/',
+            'http://www.breitbart.com/sports/',
+            'http://www.breitbart.com/news/'
+
+        ]
+    },
+    {
+        'Name': 'www.foxnews.com/'
+        'Parser': FoxArticleParser(),
+        'SeedUrls': [
+            'http://www.foxnews.com/politics.html',
+            'http://www.foxnews.com/us.html',
+            'http://www.foxnews.com/opinion.html',
+            'http://www.foxnews.com/entertainment.html',
+            'http://www.foxbusiness.com/',
+            'http://www.foxnews.com/tech.html',
+            'http://www.foxnews.com/science.html',
+            'http://www.foxnews.com/health.html',
+            'http://www.foxnews.com/travel.html',
+            'http://www.foxnews.com/lifestyle.html',
+            'http://www.foxnews.com/world.html'
         ]
     }
 ]
