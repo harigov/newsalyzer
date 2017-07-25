@@ -41,7 +41,7 @@ def get_sentiment():
     if json_data != None:
         data = json.loads(json_data)
         if data.has_key('sentiment'):
-            return json.dumps({sentiment: data['sentiment'], word_count: data['word_count']}), 200, {'ContentType':'application/json'}
+            return json.dumps({'sentiment': data['sentiment'], 'word_count': data['word_count']}), 200, {'ContentType':'application/json'}
     return json.dumps({ 'message': 'No sentiment data available for %s' % url }), 404, {'ContentType':'application/json'}
 
 if __name__=='__main__':
