@@ -29,7 +29,7 @@ news_sources = [
             'https://www.nytimes.com/section/science',
             'https://www.nytimes.com/section/health'
         ]
-    }
+    },
     {
         'Name': 'www.cnn.com',
         'Parser': CNNArticleParser(),
@@ -44,6 +44,21 @@ news_sources = [
             'http://money.cnn.com/technology/',
             'http://www.cnn.com/style',
             'http://www.cnn.com/travel'
+        ]
+    },
+    {
+        'Name': 'www.huffingtonpost.com',
+        'Parser': HuffingtonArticleParser(),
+        'SeedUrls': [
+            'http://www.huffingtonpost.com/section/politics',
+            'http://www.huffingtonpost.com/section/technology',
+            'http://www.huffingtonpost.com/section/education',
+            'http://www.huffingtonpost.com/section/business',
+            'http://highline.huffingtonpost.com/',
+            'http://www.huffingtonpost.com/section/science',
+            'http://www.huffingtonpost.com/section/weird-news',
+            'http://testkitchen.huffingtonpost.com/',
+            'http://www.huffingtonpost.com/section/college'
         ]
     }
 ]
