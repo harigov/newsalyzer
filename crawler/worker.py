@@ -8,6 +8,8 @@ from CNNArticleParser import CNNArticleParser
 from HuffingtonArticleParser import HuffingtonArticleParser
 from BrietbartArticleParser import BrietbartArticleParser
 from FoxArticleParser import FoxArticleParser
+from WashingtonPostParser import WashingtonPostParser
+from YahooMailParser import YahooMailParser
 from crawler import WebCrawler
 
 sys.path.insert(0,os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
@@ -79,7 +81,7 @@ news_sources = [
         ]
     },
     {
-        'Name': 'www.foxnews.com/'
+        'Name': 'www.foxnews.com/' , 
         'Parser': FoxArticleParser(),
         'SeedUrls': [
             'http://www.foxnews.com/politics.html',
@@ -94,6 +96,32 @@ news_sources = [
             'http://www.foxnews.com/lifestyle.html',
             'http://www.foxnews.com/world.html'
         ]
+    },
+    {
+        'Name': 'www.washingtonpost.com/',
+        'Parser': WashingtonPostParser(),
+        'SeedURLs': [
+            'http://www.washingtonpost.com/politics/',
+            'https://www.washingtonpost.com/local/',
+            'https://www.washingtonpost.com/sports/',
+            'https://www.washingtonpost.com/national/',
+            'https://www.washingtonpost.com/world/',
+            'https://www.washingtonpost.com/business/',
+            'https://www.washingtonpost.com/entertainment/',
+            'https://www.washingtonpost.com/realestate/'
+        ]
+    },
+     {
+        'Name': 'https://www.yahoo.com/news/',
+        'Parser': YahooMailParser(),
+        'SeedURLs': [
+            'https://www.yahoo.com/news/us/',
+            'https://www.yahoo.com/news/world/',
+            'https://www.yahoo.com/news/politics/',
+            'https://www.yahoo.com/news/science/',
+            'https://www.yahoo.com/news/odd/',
+            'https://www.yahoo.com/news/originals/'
+         ]
     }
 ]
 
