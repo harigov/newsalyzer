@@ -70,7 +70,7 @@ if ($) {
 		let read_time_css = {
 			'text-align': 'center',
 			'padding-bottom': '15px',
-			'font-size': '13px',
+			'font-size': '12px',
 			'font-family': 'Arial, Helvetica, sans-serif'
 		};
 
@@ -160,7 +160,6 @@ if ($) {
 					let icon_td = $('<td>').css(entity_icon_css).appendTo(tr);
 					$('<i>').attr('class', entity_icon).appendTo(icon_td);
 					$('<td>').css(entity_name_css).text(entity.name).appendTo(tr);
-					// $('<td>').text(entity.sentiment).appendTo(tr);
 					tr.appendTo(table);
 				}
 			}
@@ -210,9 +209,11 @@ if ($) {
 					$('<div>').text('Newsalyzer Analysis').css(header_css).appendTo(info_container);
 					let json_data = JSON.parse(data);
 					let read_time_div = $('<div>').appendTo(info_container);
-					read_time_div.css(read_time_css).text('Time to read: ' + json_data.read_time_in_mins + ' mins');
+					read_time_div.css(read_time_css).html('<i class="fa fa-clock-o"></i> Time to read: ' + json_data.read_time_in_mins + ' mins');
 					populate_summary(json_data);
 					populate_sentiments(json_data);
+					let learn_more_div = $('<div>').css({'font-size':'13px', 'text-align': 'right', 'margin-top':'15px'}).appendTo(info_container);
+					learn_more_div.html('Learn more at <a href="www.newsalyzer.org">newsalyzer.org</a>');
 					info_btn.show();
 					info_bar.already_fetched = true;
 				},
