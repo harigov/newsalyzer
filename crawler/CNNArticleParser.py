@@ -5,15 +5,10 @@ import re
 from article_parser import ArticleParser
 
 class CNNArticleParser(ArticleParser):
-    def parse(self, url, article_text):
-        ArticleParser.parse(self,url,article_text)
-
     def _get_title(self):
-        head = self._soup.find('pg-headline')
-        if head != None:
-            title = head.find('pg-headline')
-            if title != None:
-                return title.getText()
+        title = self._soup.find('h1', {'class': 'pg-headline'})
+        if title != None:
+            return title.getText()
         return ''
 
     def _get_date(self):
@@ -28,12 +23,30 @@ class CNNArticleParser(ArticleParser):
                     return date.encode('utf-8')
         return ''
 
+    def _extract_links(self):
+        links = []
+        for link_element in self._get_link_elements():
+            for href_element in link_element.findAll('a', href = True):
+                url = href_element.get('href').encode('utf-8')
+                # exclude non-article links and refs
+                index = url.find(".html")
+                if index == -1: continue
+                if not url.startswith('https:') and not url.startswith('http:'):
+                    url = 'https://' + self.base_domain + url
+                # exclude links that aren't from the same domain
+                links.append(url)
+        return links
+
     def _get_link_elements(self):
-        return self._soup.findAll('div', {'class' : 'story'}) + self._soup.findAll('article', {'class' : 'story'})
+        return self._soup.findAll('article', {'class' : 'cd'})
 
     def _get_article_text(self):
         content = ''
         for story_element in self._soup.findAll('p', {'class' : 'zn-body__paragraph'}):
+            if story_element != None:
+                # Remove newlines
+                content += re.sub(r"\n+", " ", story_element.getText())
+        for story_element in self._soup.findAll('div', {'class' : 'zn-body__paragraph'}):
             if story_element != None:
                 # Remove newlines
                 content += re.sub(r"\n+", " ", story_element.getText())

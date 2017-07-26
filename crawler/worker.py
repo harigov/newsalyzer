@@ -40,14 +40,12 @@ news_sources = [
         'Name': 'www.cnn.com',
         'Parser': CNNArticleParser(),
         'SeedURLs': [
-            'https://money.cnn.com/',
             'https://www.cnn.com/us',
             'https://www.cnn.com/world',
             'https://www.cnn.com/politics',
             'https://www.cnn.com/opinions',
             'https://www.cnn.com/entertainment',
             'https://www.cnn.com/health',
-            'https://money.cnn.com/technology/',
             'https://www.cnn.com/style',
             'https://www.cnn.com/travel'
         ]

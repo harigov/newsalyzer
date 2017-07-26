@@ -34,12 +34,13 @@ class WebCrawler(object):
                 self._visited_urls[url_hash] = True
                 Logger.LogDebug('\t\tVisiting %s' % url)
                 article = self._crawl_website(url)
-                if article == None: continue
+                if article==None: continue
                 if self._sentiment_extractor != None:
                     Logger.LogDebug('\t\tExtracting sentiment for %s' % url)
                     article.sentiment = self._sentiment_extractor.find_sentiment(article.content)
-                article_json = json.dumps(article.__dict__)
-                self._table.set(self._source, url_hash, article_json)
+                if article.content!=None and article.title!=None:
+                    article_json = json.dumps(article.__dict__)
+                    self._table.set(self._source, url_hash, article_json)
                 self._url_queue.extend(article.links)
                 if(article.word_count > min_word_count):
                     url_count += 1
