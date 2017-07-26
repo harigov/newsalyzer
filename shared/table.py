@@ -22,6 +22,12 @@ class AzureTable(object):
         entity = self._table.get_entity(self._table_name, partition_key, row_key, select=select)
         return self._get_data(entity)
 
+    def safe_get(self, partition_key, row_key, select=None):
+        try:
+            return self.get(partition_key, row_key, select)
+        except Exception, e:
+            return None
+
     def set(self, partition_key, row_key, data):
         entity = Entity()
         entity.PartitionKey = partition_key

@@ -38,9 +38,19 @@ def get_acme_challenge(path):
 @Monitor.api()
 def get_sentiment():
     url = request.args['url']
-    source_name = urlparse.urlparse(url).hostname
+    parsed_url = urlparse.urlparse(url)
+    source_name = parsed_url.hostname
     url_hash = hashlib.sha256(url).hexdigest()
-    json_data = table.get(source_name, url_hash)
+    json_data = table.safe_get(source_name, url_hash)
+    if json_data==None:
+        # sometimes user may access from http or https
+        # but our records hold it other way
+        if 'http:' in url:
+            url = url.replace('http:', 'https:')
+        else:
+            url = url.replace('https:', 'http:')
+        url_hash = hashlib.sha256(url).hexdigest()
+        json_data = table.safe_get(source_name, url_hash)
     if json_data != None:
         data = json.loads(json_data)
         if data.has_key('sentiment'):
