@@ -32,7 +32,8 @@ if ($) {
 			'z-index': '2147483647',
 			display: 'hidden'
 		}).appendTo(document.body);
-		$('<img>').attr('src', kango.io.getResourceUrl('icons/info.png')).css({ 'height': '30px', 'margin-top': '6px' }).appendTo(info_btn);
+		$('<img>').attr('src', kango.io.getResourceUrl('icons/info.png')).css(
+			{ 'height': '30px', 'margin-top': '6px', 'width': '30px', 'margin-left': '4px' }).appendTo(info_btn);
 
 		var info_bar = $('<div>').css({
 			position: 'absolute',
@@ -64,12 +65,14 @@ if ($) {
 			'text-align': 'center',
 			'margin-bottom': '5px',
 			'font-size': '16px',
-			'font-family': 'Arial, Helvetica, sans-serif'
+			'font-family': 'Arial, Helvetica, sans-serif',
+			'line-height': '1.0'
 		};
 
 		let read_time_css = {
 			'text-align': 'center',
 			'padding-bottom': '15px',
+			'line-height': '1.0',
 			'font-size': '12px',
 			'font-family': 'Arial, Helvetica, sans-serif'
 		};
@@ -77,13 +80,15 @@ if ($) {
 		let summary_css = {
 			height: '50px',
 			'overflow-y': 'scroll',
-			'margin-bottom': '15px'
+			'margin-bottom': '15px',
+			'line-height': '1.0'
 		};
 		
 		let summary_paragraph_css = {
 			'text-align': 'justify',
 			'font-size': '12px',
-			'font-family': 'Arial, Helvetica, sans-serif'
+			'font-family': 'Arial, Helvetica, sans-serif',
+			'line-height': '1.0'
 		};
 
 		let entity_icon_css = {
@@ -98,12 +103,14 @@ if ($) {
 			'font-size': '12px',
 			'font-family': 'Arial, Helvetica, sans-serif',
 			'text-align': 'left',
-			'padding-top': '2px'
+			'padding-top': '2px',
+			'line-height': '1.0'
 		};
 
 		let sentiment_label_css = {
 			'font-family': 'Arial, Helvetica, sans-serif',
-			'font-size': '10px'
+			'font-size': '10px',
+			'line-height': '1.0'
 		}
 
 		function get_entity_icon(entity_type) {
@@ -132,7 +139,7 @@ if ($) {
 			let labels_div = $('<div>').attr('class', 'row').appendTo(info_container);
 			$('<span>').text('Positive Sentiment').css({ float: 'left' }).css(sentiment_label_css).appendTo(labels_div);
 			$('<span>').text('Negative Sentiment').css({ float: 'right' }).css(sentiment_label_css).appendTo(labels_div);
-			let table = $('<table>');
+			let table = $('<table>').css({'width': '100%'});
 			let sentiment_container = $('<div>').css(sentiment_container_css).appendTo(info_container);
 			table.appendTo(sentiment_container);
 			for (let entity of json_data.sentiment.entities) {
@@ -153,6 +160,7 @@ if ($) {
 						'border-radius': '2px',
 						'border-color': 'rgba(255, 255, 255, 0.85)',
 						'border-style': 'solid',
+						'line-height': '1.0',
 						height: '16px',
 						width: '100%'
 					}
