@@ -40,16 +40,16 @@ news_sources = [
         'Name': 'www.cnn.com',
         'Parser': CNNArticleParser(),
         'SeedURLs': [
-            'http://money.cnn.com/',
-            'http://www.cnn.com/us',
-            'http://www.cnn.com/world',
-            'http://www.cnn.com/politics',
-            'http://www.cnn.com/opinions',
-            'http://www.cnn.com/entertainment',
-            'http://www.cnn.com/health',
-            'http://money.cnn.com/technology/',
-            'http://www.cnn.com/style',
-            'http://www.cnn.com/travel'
+            'https://money.cnn.com/',
+            'https://www.cnn.com/us',
+            'https://www.cnn.com/world',
+            'https://www.cnn.com/politics',
+            'https://www.cnn.com/opinions',
+            'https://www.cnn.com/entertainment',
+            'https://www.cnn.com/health',
+            'https://money.cnn.com/technology/',
+            'https://www.cnn.com/style',
+            'https://www.cnn.com/travel'
         ]
     },
     {
@@ -68,7 +68,7 @@ news_sources = [
         ]
     },
     {
-        'Name': 'www.breitbart.com/',
+        'Name': 'www.breitbart.com',
         'Parser': BreitbartArticleParser(),
         'SeedURLs': [
             'http://www.breitbart.com/big-government/',
@@ -82,7 +82,7 @@ news_sources = [
         ]
     },
     {
-        'Name': 'www.foxnews.com/' , 
+        'Name': 'www.foxnews.com' , 
         'Parser': FoxArticleParser(),
         'SeedURLs': [
             'http://www.foxnews.com/politics.html',
@@ -99,10 +99,10 @@ news_sources = [
         ]
     },
     {
-        'Name': 'www.washingtonpost.com/',
+        'Name': 'www.washingtonpost.com',
         'Parser': WashingtonPostParser(),
         'SeedURLs': [
-            'http://www.washingtonpost.com/politics/',
+            'https://www.washingtonpost.com/politics/',
             'https://www.washingtonpost.com/local/',
             'https://www.washingtonpost.com/sports/',
             'https://www.washingtonpost.com/national/',
@@ -113,7 +113,7 @@ news_sources = [
         ]
     },
      {
-        'Name': 'https://www.yahoo.com/news/',
+        'Name': 'www.yahoo.com',
         'Parser': YahooMailParser(),
         'SeedURLs': [
             'https://www.yahoo.com/news/us/',
@@ -143,7 +143,7 @@ def crawl_thread_func(*args):
     count = 0
     try:
         Logger.LogInformation('Crawling '+ source)
-        count = crawler.crawl(seed_url, int(max_seed_limit)
+        count = crawler.crawl(seed_url, int(max_seed_limit))
     except Exception,e:
         Logger.LogError('Failed to crawl through seed url %s for source %s' % (seed_url, source))
     Logger.LogInformation('Total %d new articles found' % count)
@@ -159,6 +159,10 @@ if __name__ == "__main__":
     parser.add_argument('--seed_limit', dest='max_seed_limit', type=int, default=10,
                             help='Specify the maximum number of articles to download from a single seed.' +
                             'If more articles are found, they will be ignored.')
+    parser.add_argument('--parallel', dest='parallel', default=False,
+                            help='Run in multi-threaded mode')
+    parser.add_argument('--source', dest='source', default='',
+                            help='Crawl only specific source')
     args = parser.parse_args()
 
     storage_account_name = os.environ['STORAGE_ACCOUNT_NAME']
@@ -167,9 +171,9 @@ if __name__ == "__main__":
     table = AzureTable('Articles', storage_account_name, storage_account_key)
     sentiment = SentimentExtractor()
 
-    pool = ThreadPool()
     thread_inputs = []
     for source in news_sources:
+        if len(args.source) > 0 and source['Name'] != args.source: continue
         visited_urls = {}
         for url in table.get_all_row_keys(source['Name']):
             visited_urls[url] = True
@@ -177,8 +181,13 @@ if __name__ == "__main__":
         Logger.LogInformation('Crawling '+ source['Name'])
         for seed_url in source['SeedURLs']:
             thread_inputs.append((source['Name'], seed_url, crawler, args.max_seed_limit))
-    pool.map(crawl_thread_func, thread_inputs)
-    Logger.LogInformation("Waiting for threads to finish")
-    pool.close()
-    pool.join()
+    if args.parallel:
+        pool = ThreadPool()
+        pool.map(crawl_thread_func, thread_inputs)
+        Logger.LogInformation("Waiting for threads to finish")
+        pool.close()
+        pool.join()
+    else:
+        for i in thread_inputs:
+            crawl_thread_func(i)
     Logger.LogInformation("Crawling Finished")
