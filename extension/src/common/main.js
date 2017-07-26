@@ -22,9 +22,8 @@ if ($) {
 			left: document.body.clientWidth - 70 + 'px',
 			height: '40px',
 			width: '40px',
-			color: 'aqua',
+			background: 'rgba(19, 122, 212, 1)',
 			'text-align': 'center',
-			background: 'rgba(255, 255, 255, 0.85)',
 			'border-style': 'solid',
 			'border-color': 'black',
 			'border-width': '1px',
@@ -33,7 +32,7 @@ if ($) {
 			'z-index': '2147483647',
 			display: 'hidden'
 		}).appendTo(document.body);
-		$('<img>').attr('src', kango.io.getResourceUrl('icons/info.png')).css({ 'height': '36px', 'margin-top': '2px' }).appendTo(info_btn);
+		$('<img>').attr('src', kango.io.getResourceUrl('icons/info.png')).css({ 'height': '30px', 'margin-top': '6px' }).appendTo(info_btn);
 
 		var info_bar = $('<div>').css({
 			position: 'absolute',
@@ -72,6 +71,18 @@ if ($) {
 			'text-align': 'center',
 			'padding-bottom': '15px',
 			'font-size': '13px',
+			'font-family': 'Arial, Helvetica, sans-serif'
+		};
+
+		let summary_css = {
+			height: '50px',
+			'overflow-y': 'scroll',
+			'margin-bottom': '15px'
+		};
+		
+		let summary_paragraph_css = {
+			'text-align': 'justify',
+			'font-size': '12px',
 			'font-family': 'Arial, Helvetica, sans-serif'
 		};
 
@@ -116,6 +127,78 @@ if ($) {
 			}
 		});
 
+		function populate_sentiments(json_data)
+		{
+			let labels_div = $('<div>').attr('class', 'row').appendTo(info_container);
+			$('<span>').text('Positive Sentiment').css({ float: 'left' }).css(sentiment_label_css).appendTo(labels_div);
+			$('<span>').text('Negative Sentiment').css({ float: 'right' }).css(sentiment_label_css).appendTo(labels_div);
+			let table = $('<table>');
+			let sentiment_container = $('<div>').css(sentiment_container_css).appendTo(info_container);
+			table.appendTo(sentiment_container);
+			for (let entity of json_data.sentiment.entities) {
+				let entity_icon = get_entity_icon(entity.type);
+				if (entity_icon) {
+					let tr = $('<tr>');
+					let sentiment_point = 50 + entity.sentiment * 50;
+					let color_text = negative_color + ' 0%, ';
+					color_text += negative_color + ' ' + (sentiment_point - 5) + '%, ';
+					color_text += positive_color + ' ' + (sentiment_point + 5) + '%, ';
+					color_text += positive_color + ' 100%';
+					let entity_value_css = {
+						background: '-moz-linear-gradient(left, ' + color_text + ')', /* FF3.6-15 */
+						background: '-webkit-linear-gradient(left, ' + color_text + ')', /* Chrome10-25,Safari5.1-6 */
+						background: 'linear-gradient(to right, ' + color_text + ')',
+						'margin-top': '2px',
+						'margin-bottom': '2px',
+						'border-radius': '2px',
+						'border-color': 'rgba(255, 255, 255, 0.85)',
+						'border-style': 'solid',
+						height: '16px',
+						width: '100%'
+					}
+					tr.css(entity_value_css);
+					let icon_td = $('<td>').css(entity_icon_css).appendTo(tr);
+					$('<i>').attr('class', entity_icon).appendTo(icon_td);
+					$('<td>').css(entity_name_css).text(entity.name).appendTo(tr);
+					// $('<td>').text(entity.sentiment).appendTo(tr);
+					tr.appendTo(table);
+				}
+			}
+		}
+
+		function populate_summary(json_data) {
+			if (json_data.summary && json_data.summary.length > 0) {
+				let summary = json_data.summary;
+				let summary_words = json_data.summary.split(' ');
+				let show_more = false;
+				if (summary_words.length > 25) {
+					summary = summary_words.slice(0, 25).join(' ') + '\n';
+					show_more = true;
+				}
+				let summary_div = $('<div>').appendTo(info_container);
+				$('<strong>').text('tldr. ').css(summary_paragraph_css).appendTo(summary_div);
+				let summary_paragraph = $('<span>').css(summary_paragraph_css).appendTo(summary_div);
+				summary_div.css(summary_css);
+				summary_paragraph.text(summary);
+				if (show_more) {
+					let show_more_link = $('<a>').text('show more').css({ 'text-align': 'right', 'font-size': '10px' }).appendTo(summary_div);
+					show_more_link.click(function () {
+						if (summary_div.css('overflow-y') === 'visible') {
+							summary_div.css('overflow-y', 'hidden');
+							summary_div.css('height', '50px');
+							summary_paragraph.text(summary);
+							show_more_link.text('show more');
+						} else {
+							summary_div.css('overflow-y', 'visible');
+							summary_div.css('height', '');
+							summary_paragraph.text(json_data.summary + '\n');
+							show_more_link.text('show less');
+						}
+					});
+				}
+			}
+		}
+
 		if (!info_bar.already_fetched) {
 			let url = window.location.href.split('?')[0];
 			url = encodeURIComponent(url);
@@ -128,42 +211,8 @@ if ($) {
 					let json_data = JSON.parse(data);
 					let read_time_div = $('<div>').appendTo(info_container);
 					read_time_div.css(read_time_css).text('Time to read: ' + json_data.read_time_in_mins + ' mins');
-					let table = $('<table>');
-					let sentiment_container = $('<div>').css(sentiment_container_css).appendTo(info_container);
-					let labels_div = $('<div>').attr('class', 'row').appendTo(sentiment_container);
-					$('<span>').text('Negative Sentiment').css({ float: 'left' }).css(sentiment_label_css).appendTo(labels_div);
-					$('<span>').text('Positive Sentiment').css({ float: 'right' }).css(sentiment_label_css).appendTo(labels_div);
-					table.appendTo(sentiment_container);
-					for (let entity of json_data.sentiment.entities) {
-						let entity_icon = get_entity_icon(entity.type);
-						if (entity_icon) {
-							let tr = $('<tr>');
-							let sentiment_point = 50 + entity.sentiment * 50;
-							let color_text = negative_color + ' 0%, ';
-							color_text += negative_color + ' ' + (sentiment_point - 5) + '%, ';
-							color_text += positive_color + ' ' + (sentiment_point + 5) + '%, ';
-							color_text += positive_color + ' 100%';
-							let entity_value_css = {
-								background: '-moz-linear-gradient(left, ' + color_text + ')', /* FF3.6-15 */
-								background: '-webkit-linear-gradient(left, ' + color_text + ')', /* Chrome10-25,Safari5.1-6 */
-								background: 'linear-gradient(to right, ' + color_text + ')',
-								'margin-top': '2px',
-								'margin-bottom': '2px',
-								'border-radius': '2px',
-								'border-color': 'rgba(255, 255, 255, 0.85)',
-								'border-style': 'solid',
-								height: '16px',
-								width: '100%'
-							}
-							tr.css(entity_value_css);
-							let icon_td = $('<td>').css(entity_icon_css).appendTo(tr);
-							$('<i>').attr('class', entity_icon).appendTo(icon_td);
-							$('<td>').css(entity_name_css).text(entity.name).appendTo(tr);
-							// $('<td>').text(entity.sentiment).appendTo(tr);
-							tr.appendTo(table);
-						}
-					}
-
+					populate_summary(json_data);
+					populate_sentiments(json_data);
 					info_btn.show();
 					info_bar.already_fetched = true;
 				},
