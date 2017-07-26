@@ -2,6 +2,9 @@ import urlparse
 import os
 from bs4 import BeautifulSoup
 import re
+import sys
+
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
 
 from shared.summarizer import ArticleSummarizer
 
@@ -20,7 +23,7 @@ class Article(object):
 
 class ArticleParser(object):
     def __init__(self):
-        self._summarizer = ArticleSummarize()
+        self._summarizer = ArticleSummarizer()
 
     def parse(self, url, article_text):
         self.url = url

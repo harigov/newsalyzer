@@ -55,7 +55,7 @@ news_sources = [
     {
         'Name': 'www.huffingtonpost.com',
         'Parser': HuffingtonArticleParser(),
-        'SeedUrls': [
+        'SeedURLs': [
             'http://www.huffingtonpost.com/section/politics',
             'http://www.huffingtonpost.com/section/technology',
             'http://www.huffingtonpost.com/section/education',
@@ -70,7 +70,7 @@ news_sources = [
     {
         'Name': 'www.breitbart.com/',
         'Parser': BreitbartArticleParser(),
-        'SeedUrls': [
+        'SeedURLs': [
             'http://www.breitbart.com/big-government/',
             'http://www.breitbart.com/big-journalism/',
             'http://www.breitbart.com/big-hollywood/',
@@ -84,7 +84,7 @@ news_sources = [
     {
         'Name': 'www.foxnews.com/' , 
         'Parser': FoxArticleParser(),
-        'SeedUrls': [
+        'SeedURLs': [
             'http://www.foxnews.com/politics.html',
             'http://www.foxnews.com/us.html',
             'http://www.foxnews.com/opinion.html',
@@ -142,10 +142,10 @@ def crawl_thread_func(*args):
     source, seed_url, crawler, max_seed_limit = args[0]
     count = 0
     try:
-        Logger.LogInformation('Crawling '+ source['Name'])
-        count = crawler.crawl(seed_url, int(args.max_seed_limit))
+        Logger.LogInformation('Crawling '+ source)
+        count = crawler.crawl(seed_url, int(max_seed_limit)
     except Exception,e:
-        Logger.LogError('Failed to crawl through seed url %s for source %s' % (seed_url, source['Name']))
+        Logger.LogError('Failed to crawl through seed url %s for source %s' % (seed_url, source))
     Logger.LogInformation('Total %d new articles found' % count)
 
 if __name__ == "__main__":
@@ -165,14 +165,14 @@ if __name__ == "__main__":
     storage_account_key = os.environ['STORAGE_ACCOUNT_KEY']
     download_nlp_key(storage_account_name, storage_account_key)
     table = AzureTable('Articles', storage_account_name, storage_account_key)
-    visited_urls = {}
-    for url in table.get_all_row_keys(source):
-        visited_urls[url] = True
     sentiment = SentimentExtractor()
 
     pool = ThreadPool()
     thread_inputs = []
     for source in news_sources:
+        visited_urls = {}
+        for url in table.get_all_row_keys(source['Name']):
+            visited_urls[url] = True
         crawler = WebCrawler(source['Parser'], source['Name'], table, sentiment, visited_urls)
         Logger.LogInformation('Crawling '+ source['Name'])
         for seed_url in source['SeedURLs']:
