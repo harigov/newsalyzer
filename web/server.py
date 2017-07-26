@@ -13,7 +13,6 @@ sys.path.insert(0,os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'
 
 from shared.logger import Logger
 from shared.table import AzureTable
-from shared.summarizer import ArticleSummarizer
 
 app = Flask(__name__)
 app.config['DEBUG']=True
@@ -22,8 +21,6 @@ app.config['DEBUG']=True
 storage_account_name = os.environ['STORAGE_ACCOUNT_NAME']
 storage_account_key = os.environ['STORAGE_ACCOUNT_KEY']
 table = AzureTable('Articles', storage_account_name, storage_account_key)
-
-summarizer = ArticleSummarizer()
 
 @app.route('/', endpoint='index')
 @Monitor.api()
@@ -46,7 +43,9 @@ def get_sentiment():
         data = json.loads(json_data)
         if data.has_key('sentiment'):
             content = data['content']
-            summary = summarizer.summarize(content)
+            summary = ''
+            if data.has_key('summary'):
+                summary = data['summary']
             read_time_in_mins = math.ceil(int(data['word_count']) * 1.0 / 250)
             return json.dumps({
                 'sentiment': data['sentiment'], 

@@ -3,6 +3,10 @@ import os
 from bs4 import BeautifulSoup
 import re
 
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
+
+from shared.summarizer import ArticleSummarizer
+
 class Article(object):
     def __init__(self):
         self.url = ''
@@ -13,9 +17,13 @@ class Article(object):
         self.keywords = ''
         self.links = []
         self.sentiment = {}
+        self.summary = ''
         self.relative_sentiment = {}
 
 class ArticleParser(object):
+    def __init__(self):
+        self._summarizer = ArticleSummarize()
+
     def parse(self, url, article_text):
         self.url = url
         self.base_domain = urlparse.urlparse(url).netloc
@@ -29,6 +37,7 @@ class ArticleParser(object):
         article.title = self._get_title()
         article.keywords = self._get_keywords()
         article.date = self._get_date()
+        article.summary = self._summarizer.summarize(article.content)
         return article
 
     def _extract_links(self):
