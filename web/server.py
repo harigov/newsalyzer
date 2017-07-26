@@ -22,7 +22,7 @@ storage_account_name = os.environ['STORAGE_ACCOUNT_NAME']
 storage_account_key = os.environ['STORAGE_ACCOUNT_KEY']
 table = AzureTable('Articles', storage_account_name, storage_account_key)
 
-estimate_words_per_min = 200
+estimate_words_per_min = 160
 
 @app.route('/', endpoint='index')
 @Monitor.api()
@@ -49,6 +49,7 @@ def get_sentiment():
             if data.has_key('summary'):
                 summary = data['summary']
             read_time_in_mins = math.ceil(int(data['word_count']) * 1.0 / estimate_words_per_min)
+            data['sentiment']['entities'].sort(key = lambda s: s['magnitude'], reverse=True)
             return json.dumps({
                 'sentiment': data['sentiment'], 
                 'summary': summary,

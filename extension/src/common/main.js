@@ -56,7 +56,7 @@ if ($) {
 
 		let sentiment_container_css = {
 			'overflow-y': 'scroll',
-			height: '200px',
+			height: '320px',
 			width: '100%'
 		}
 
@@ -166,12 +166,13 @@ if ($) {
 		}
 
 		function populate_summary(json_data) {
+			let short_summary_length = 18;
 			if (json_data.summary && json_data.summary.length > 0) {
 				let summary = json_data.summary;
 				let summary_words = json_data.summary.split(' ');
 				let show_more = false;
-				if (summary_words.length > 25) {
-					summary = summary_words.slice(0, 25).join(' ') + '\n';
+				if (summary_words.length > short_summary_length) {
+					summary = summary_words.slice(0, short_summary_length).join(' ') + '\n';
 					show_more = true;
 				}
 				let summary_div = $('<div>').appendTo(info_container);
