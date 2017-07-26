@@ -3,8 +3,6 @@ import os
 from bs4 import BeautifulSoup
 import re
 
-sys.path.insert(0,os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
-
 from shared.summarizer import ArticleSummarizer
 
 class Article(object):
