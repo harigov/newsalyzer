@@ -27,7 +27,7 @@ class ArticleParser(object):
 
     def parse(self, url, article_text):
         self.url = url
-        self.base_domain = urlparse.urlparse(url).netloc
+        self.base_domain = urlparse.urlparse(url).hostname
         self.text = article_text
         self._soup = BeautifulSoup(self.text, "html.parser")
         article = Article()

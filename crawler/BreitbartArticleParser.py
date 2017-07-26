@@ -5,11 +5,8 @@ import re
 from article_parser import ArticleParser
 
 class BreitbartArticleParser(ArticleParser):
-    def parse(self, url, article_text):
-        ArticleParser.parse(self,url,article_text)
-
     def _get_title(self):
-        head = self._soup.find('articleheader')
+        head = self._soup.find('header', {'class': 'articleheader'})
         if head != None:
             title = head.find('h1')
             if title != None:
@@ -28,10 +25,27 @@ class BreitbartArticleParser(ArticleParser):
                     return date.encode('utf-8')
         return ''
 
+    def _extract_links(self):
+        links = []
+        for link_element in self._get_link_elements():
+            for href_element in link_element.findAll('a', href = True):
+                url = href_element.get('href').encode('utf-8')
+                # exclude links that aren't from the same domain
+                index = url.find(self.base_domain)
+                if(index == -1): continue
+                links.append(url)
+        return links
+
+    def _get_link_elements(self):
+        return self._soup.findAll('h2', {'class' : 'title'})
+
     def _get_article_text(self):
         content = ''
         for story_element in self._soup.findAll('div', {'class' : 'entry-content'}):
             if story_element != None:
                 # Remove newlines
-                content += re.sub(r"\n+", " ", story_element.getText())
+                for h2_element in story_element.findAll('h2'):
+                    content += re.sub(r"\n+", " ", h2_element.getText())
+                for p_element in story_element.findAll('p'):
+                    content += re.sub(r"\n+", " ", p_element.getText())
         return content
