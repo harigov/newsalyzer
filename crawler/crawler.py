@@ -11,15 +11,13 @@ sys.path.insert(0,os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'
 from shared.logger import Logger
 
 class WebCrawler(object):
-    def __init__(self, article_parser, source, table, sentiment_extractor):
+    def __init__(self, article_parser, source, table, sentiment_extractor, visited_urls):
         self._article_parser = article_parser
         self._source = source
         self._table = table
         self._sentiment_extractor = sentiment_extractor
         self._url_queue = deque()
-        self._visited_urls = {}
-        for url in self._table.get_all_row_keys(source):
-            self._visited_urls[url] = True
+        self._visited_urls = visited_urls
 
     def crawl(self, start_url, url_limit, min_word_count=150):
         url_count = 0

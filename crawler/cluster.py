@@ -11,6 +11,12 @@ from article_parser import Article
 from shared.table import AzureTable
 from shared.logger import Logger
 
+def find_similar_articles(args):
+    cluster = args[0][0]
+    idx = args[0][1]
+    threshold = args[0][2]
+    cluster._find_similar_articles(idx, threshold)
+
 class TopicCluster(object):
     def __init__(self, table):
         self._table = table
@@ -48,6 +54,7 @@ class TopicCluster(object):
         pool.close()
         pool.join()
         Logger.LogInformation('Done processing clusters')
+        return 0
 
     def _find_similar_articles(self, idx, threshold):
         tfidf_vec = self._tfidf_corpus[idx]

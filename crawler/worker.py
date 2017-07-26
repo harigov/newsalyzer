@@ -2,7 +2,7 @@ import argparse
 import os
 import sys
 
-from multithreading.dummy import Pool as ThreadPool
+from multiprocessing.pool import ThreadPool
 from sentiment_extractor import SentimentExtractor
 from article_parser import Article, ArticleParser
 from CNNArticleParser import CNNArticleParser
@@ -138,16 +138,14 @@ def download_nlp_key(storage_account_name, storage_account_key):
         Logger.LogInformation('Successfully downloaded the key')
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = local_key_file
 
-def crawl_thread_func(source, crawler, max_limit, max_seed_limit):
-    Logger.LogInformation('Crawling '+ source['Name'])
+def crawl_thread_func(*args):
+    source, seed_url, crawler, max_seed_limit = args[0]
     count = 0
-    for seed_url in source['SeedURLs']:
-        try:
-            Logger.LogInformation('\tCrawling ' + seed_url)
-            count += crawler.crawl(seed_url, int(args.max_seed_limit))
-            if count > args.max_limit: break
-        except Exception,e:
-            Logger.LogError('Failed to crawl through seed url %s for source %s' % (seed_url, source['Name']))
+    try:
+        Logger.LogInformation('Crawling '+ source['Name'])
+        count = crawler.crawl(seed_url, int(args.max_seed_limit))
+    except Exception,e:
+        Logger.LogError('Failed to crawl through seed url %s for source %s' % (seed_url, source['Name']))
     Logger.LogInformation('Total %d new articles found' % count)
 
 if __name__ == "__main__":
@@ -167,15 +165,20 @@ if __name__ == "__main__":
     storage_account_key = os.environ['STORAGE_ACCOUNT_KEY']
     download_nlp_key(storage_account_name, storage_account_key)
     table = AzureTable('Articles', storage_account_name, storage_account_key)
+    visited_urls = {}
+    for url in table.get_all_row_keys(source):
+        visited_urls[url] = True
     sentiment = SentimentExtractor()
 
-    crawlers = []
+    pool = ThreadPool()
+    thread_inputs = []
     for source in news_sources:
-        crawler = WebCrawler(source['Parser'], source['Name'], table, sentiment)
-        crawlers.append([source, crawler, args.max_limit, args.max_seed_limit])
-
-    pool = ThreadPool(8)
-    results = pool.map(crawl_thread_func, crawlers)
+        crawler = WebCrawler(source['Parser'], source['Name'], table, sentiment, visited_urls)
+        Logger.LogInformation('Crawling '+ source['Name'])
+        for seed_url in source['SeedURLs']:
+            thread_inputs.append((source['Name'], seed_url, crawler, args.max_seed_limit))
+    pool.map(crawl_thread_func, thread_inputs)
+    Logger.LogInformation("Waiting for threads to finish")
     pool.close()
     pool.join()
     Logger.LogInformation("Crawling Finished")
