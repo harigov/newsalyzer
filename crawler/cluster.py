@@ -2,6 +2,7 @@ import json
 import os
 import sys
 
+from multiprocessing.pool import ThreadPool
 from gensim import corpora, models, similarities
 
 sys.path.insert(0,os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
@@ -40,18 +41,19 @@ class TopicCluster(object):
     def form_clusters(self, threshold):
         self._cluster_map = {}
         self._doc_cluster_map = {}
-        i, cluster_idx = 0, 0
-        for tfidf_vec in self._tfidf_corpus:
-            i += 1
-            if self._doc_cluster_map.has_key(i): continue
-            cluster_idx += 1
+        pool = ThreadPool()
+        for i in range(0, len(self._tfidf_corpus)):
             self._cluster_map[cluster_idx] = []
-            self._doc_cluster_map[i] = cluster_idx
-            for s in enumerate(self._index[tfidf_vec]):
-                if s[1] < threshold: break
-                self._doc_cluster_map[s[0]] = cluster_idx
-                self._cluster_map[cluster_idx].append(s[0])
-        return cluster_idx
+            pool.map(self._find_similar_articles, (i, threshold))
+        pool.close()
+        pool.join()
+        Logger.LogInformation('Done processing clusters')
+
+    def _find_similar_articles(self, idx, threshold):
+        tfidf_vec = self._tfidf_corpus[idx]
+        for s in enumerate(self._index[tfidf_vec]):
+            if s[1] < threshold: break
+            self._cluster_map[idx].append(s[0])
 
     def find_relative_sentiment(self):
         min_docs_to_appear = 1
