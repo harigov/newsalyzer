@@ -14,7 +14,14 @@ class SentimentExtractor(object):
             response = {
                 'score' : sentiment.score,
                 'magnitude' : sentiment.magnitude,
-                'entities' : [ { 'name': e.name, 'type': e.entity_type, 'sentiment' : e.sentiment.score, 'magnitude': e.sentiment.magnitude } for e in entity_response.entities]
+                'entities' : [ 
+                    { 
+                        'name': e.name, 
+                        'type': e.entity_type, 
+                        'sentiment' : e.sentiment.score, 
+                        'magnitude': e.sentiment.magnitude, 
+                        'salience': e.salience 
+                    } for e in entity_response.entities]
             }
             return response
         except Exception,e:

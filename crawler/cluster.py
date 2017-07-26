@@ -24,12 +24,12 @@ class TopicCluster(object):
         self._dictionary = corpora.Dictionary(self.documents)
         self._dictionary.compactify()
         Logger.LogInformation('Computing bag of word vectors')
-        corpus = [self._dictionary.doc2bow(d) for d in self.documents]
+        self._corpus = [self._dictionary.doc2bow(d) for d in self.documents]
         Logger.LogInformation('Computing Tfidf vectors')
-        self._tfidf = models.TfidfModel(corpus)
-        tfidf_corpus = [self._tfidf[d] for d in corpus]
+        self._tfidf = models.TfidfModel(self._corpus)
+        self._tfidf_corpus = [self._tfidf[d] for d in self._corpus]
         Logger.LogInformation('Generating the similarity index')
-        self._index = similarities.MatrixSimilarity(tfidf_corpus)
+        self._index = similarities.MatrixSimilarity(self._tfidf_corpus)
         Logger.LogInformation('Forming clusters')
         num_clusters = self.form_clusters(threshold)
         Logger.LogInformation('Found %d clusters' % num_clusters)
@@ -41,13 +41,13 @@ class TopicCluster(object):
         self._cluster_map = {}
         self._doc_cluster_map = {}
         i, cluster_idx = 0, 0
-        for d in self.documents:
+        for tfidf_vec in self._tfidf_corpus:
             i += 1
             if self._doc_cluster_map.has_key(i): continue
             cluster_idx += 1
             self._cluster_map[cluster_idx] = []
             self._doc_cluster_map[i] = cluster_idx
-            for s in cluster.find_similar(d):
+            for s in enumerate(self._index[tfidf_vec]):
                 if s[1] < threshold: break
                 self._doc_cluster_map[s[0]] = cluster_idx
                 self._cluster_map[cluster_idx].append(s[0])
@@ -82,16 +82,12 @@ class TopicCluster(object):
                         relative_sentiment[entity_name] = (entity['sentiment'] - mid_sentiment) / diff_sentiment
                 article.relative_sentiment = relative_sentiment
 
-    def find_similar(self, article):
-        bow_vec = self._dictionary.doc2bow(article)
-        tfidf_vec = self._tfidf[bow_vec]
-        return enumerate(self._index[tfidf_vec])
-
     def _get_document(self):
         for a in self._table.get_all():
             wordvec = []
             article = Article()
             article.__dict__ = json.loads(a)
+            if article.sentiment == None: continue
             for entity in article.sentiment['entities']:
                 wordvec.append(entity['name'])
             self._articles.append(article)

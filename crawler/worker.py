@@ -2,6 +2,7 @@ import argparse
 import os
 import sys
 
+from multithreading.dummy import Pool as ThreadPool
 from sentiment_extractor import SentimentExtractor
 from article_parser import Article, ArticleParser
 from CNNArticleParser import CNNArticleParser
@@ -137,6 +138,18 @@ def download_nlp_key(storage_account_name, storage_account_key):
         Logger.LogInformation('Successfully downloaded the key')
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = local_key_file
 
+def crawl_thread_func(source, crawler, max_limit, max_seed_limit):
+    Logger.LogInformation('Crawling '+ source['Name'])
+    count = 0
+    for seed_url in source['SeedURLs']:
+        try:
+            Logger.LogInformation('\tCrawling ' + seed_url)
+            count += crawler.crawl(seed_url, int(args.max_seed_limit))
+            if count > args.max_limit: break
+        except Exception,e:
+            Logger.LogError('Failed to crawl through seed url %s for source %s' % (seed_url, source['Name']))
+    Logger.LogInformation('Total %d new articles found' % count)
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='worker', description="Worker that crawls news sources and extracts articles")
     parser.add_argument('--wait', dest='wait_time', type=int, default=120,
@@ -156,13 +169,13 @@ if __name__ == "__main__":
     table = AzureTable('Articles', storage_account_name, storage_account_key)
     sentiment = SentimentExtractor()
 
+    crawlers = []
     for source in news_sources:
-        Logger.LogInformation('Crawling '+ source['Name'])
         crawler = WebCrawler(source['Parser'], source['Name'], table, sentiment)
-        count = 0
-        for seed_url in source['SeedURLs']:
-            Logger.LogInformation('\tCrawling ' + seed_url)
-            count += crawler.crawl(seed_url, int(args.max_seed_limit))
-            if count > args.max_limit: break
-        Logger.LogInformation('Total %d new articles found' % count)
+        crawlers.append([source, crawler, args.max_limit, args.max_seed_limit])
+
+    pool = ThreadPool(8)
+    results = pool.map(crawl_thread_func, crawlers)
+    pool.close()
+    pool.join()
     Logger.LogInformation("Crawling Finished")

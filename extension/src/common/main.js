@@ -213,7 +213,7 @@ if ($) {
 					populate_summary(json_data);
 					populate_sentiments(json_data);
 					let learn_more_div = $('<div>').css({'font-size':'13px', 'text-align': 'right', 'margin-top':'15px'}).appendTo(info_container);
-					learn_more_div.html('Learn more at <a href="www.newsalyzer.org">newsalyzer.org</a>');
+					learn_more_div.html('Learn more at <a href="http://www.newsalyzer.org">newsalyzer.org</a>');
 					info_btn.show();
 					info_bar.already_fetched = true;
 				},
